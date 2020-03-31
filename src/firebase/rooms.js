@@ -7,5 +7,8 @@ export default {
   },
   create (room) {
     return roomsRef.add(room)
+  },
+  get (roomId) {
+    return roomsRef.doc(roomId).get()
   }
 }
