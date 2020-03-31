@@ -45,7 +45,7 @@ export default {
   methods: {
     onSubmit () {
       const now = Date.now()
-      const val = {
+      const room = {
         created: now,
         updated: now,
         users: [
@@ -53,19 +53,13 @@ export default {
         ]
       }
 
-      rooms.create(val)
-        .then(function (res) {
-          console.log(res)
-          console.log('Document successfully written!')
+      rooms.create(room)
+        .then((res) => {
+          this.$router.push({ name: 'Room', params: { id: res.id } })
         })
         .catch(function (error) {
           console.error('Error writing document: ', error)
         })
-
-      // this.$router.push({
-      //   name: 'Room',
-      //   params: { id }
-      // })
     }
   }
 }

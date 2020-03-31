@@ -6,6 +6,6 @@ export default {
     return roomsRef.get()
   },
   create (room) {
-    return roomsRef.doc().set(room)
+    return roomsRef.add(room)
   }
 }
