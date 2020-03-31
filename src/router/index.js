@@ -9,8 +9,8 @@ const routeOptions = [
     name: 'Home'
   },
   {
-    path: '/rooms/id',
-    name: 'RoomId'
+    path: '/rooms/:id',
+    name: 'Room'
   },
   {
     path: '/about',
