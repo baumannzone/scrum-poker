@@ -48,10 +48,10 @@ export default {
       const room = {
         created: now,
         updated: now,
-        users: [
-          { name: this.name }
-        ]
+        users: [{ name: this.name, created: now }]
       }
+
+      localStorage.setItem('_scrum-poker-online-userName', this.name)
 
       rooms.create(room)
         .then((res) => {
