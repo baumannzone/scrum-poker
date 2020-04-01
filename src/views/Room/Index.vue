@@ -51,12 +51,7 @@ export default {
     // Obtener info de sala
     this.getRoom(this.roomId)
 
-    // Realtime changes
-    rooms.ref.doc(this.roomId)
-      .onSnapshot((doc) => {
-        console.log('Current data: ', doc.data())
-        this.room.users = doc.data().users
-      })
+    this.realTimeChanges()
   },
   mounted () {
     if (!localStorage.getItem('_scrum-poker-online-userName')) {
@@ -97,6 +92,14 @@ export default {
     },
     hideModal () {
       this.$refs['my-modal'].hide()
+    },
+    realTimeChanges () {
+      // Realtime changes
+      rooms.ref.doc(this.roomId)
+        .onSnapshot((doc) => {
+          console.log('Current data: ', doc.data())
+          this.room.users = doc.data().users
+        })
     }
   }
 }

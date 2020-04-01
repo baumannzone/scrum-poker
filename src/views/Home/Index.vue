@@ -1,37 +1,35 @@
 <template>
-  <div class="home">
+  <div class="home-view">
 
-    <b-form @submit.prevent="onSubmit">
-      <b-form-group
-        id="input-group-1"
-        label="Nombre"
-        label-for="input-1"
-        description="Con este nombre te indentificaran los demás"
-      >
-        <b-form-input
-          id="input-1"
-          v-model="name"
-          type="text"
-          required
-          placeholder="Nombre"
-        ></b-form-input>
-      </b-form-group>
+    <b-container>
+      <b-row>
+        <b-col cols="12" md="6">
+          <div>
+            <h1>Crear Sala</h1>
 
-      <b-button type="submit" variant="primary">Crear sala</b-button>
-    </b-form>
+            <CreateRoomForm/>
+
+          </div>
+        </b-col>
+
+        <b-col cols="12" md="6">
+          <div>
+            <h1>Unirse</h1>
+          </div>
+        </b-col>
+      </b-row>
+    </b-container>
+
   </div>
 </template>
 
 <script>
 import rooms from '@/firebase/rooms'
+import CreateRoomForm from './CreateRoomForm'
 
 export default {
   name: 'Home',
-  data () {
-    return {
-      name: ''
-    }
-  },
+  components: { CreateRoomForm },
   created () {
     rooms.list()
       .then((querySnapshot) => {
@@ -41,26 +39,6 @@ export default {
           console.log(roomData)
         })
       })
-  },
-  methods: {
-    onSubmit () {
-      const now = Date.now()
-      const room = {
-        created: now,
-        updated: now,
-        users: [{ name: this.name, created: now }]
-      }
-
-      localStorage.setItem('_scrum-poker-online-userName', this.name)
-
-      rooms.create(room)
-        .then((res) => {
-          this.$router.push({ name: 'Room', params: { id: res.id } })
-        })
-        .catch(function (error) {
-          console.error('Error writing document: ', error)
-        })
-    }
   }
 }
 </script>
