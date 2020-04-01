@@ -33,10 +33,10 @@ export default {
   created () {
     rooms.list()
       .then((querySnapshot) => {
-        querySnapshot.forEach(function (doc) {
-          const roomData = { id: doc.id, ...doc.data() }
+        querySnapshot.forEach((doc) => {
+          // const roomData = { id: doc.id, ...doc.data() }
           // doc.data() is never undefined for query doc snapshots
-          console.log(roomData)
+          // console.log(roomData)
         })
       })
   }

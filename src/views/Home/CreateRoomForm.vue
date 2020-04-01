@@ -87,7 +87,7 @@ export default {
 
       rooms.create(roomData)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$router.push({ name: 'Room', params: { id: res.id } })
         })
         .catch(function (error) {

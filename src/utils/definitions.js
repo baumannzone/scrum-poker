@@ -23,14 +23,14 @@ const createUserModel = (userName) => {
  * @param roomName {String}
  * @param userName {String}
  * @param mode {String} Nombre del modo
- * @returns {{createdAt: number, users: ([]|*[]), roomName: String, updatedAt: number}}
+ * @returns {{createdAt: number, users: [], roomName: String, updatedAt: number}}
  */
 const createRoomModel = ({ roomName, userName, mode }) => {
   const now = Date.now()
   return {
     roomName,
     mode,
-    users: createUserModel(userName),
+    users: [createUserModel(userName)],
     createdAt: now,
     updatedAt: now
   }
