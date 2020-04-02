@@ -48,15 +48,17 @@
 </template>
 
 <script>
+import randomName from '@/mixins/randomName'
 import rooms from '@/firebase/rooms'
 import { localStorageKey, createUserModel, createRoomModel, cardSets } from '@/utils/definitions'
 
 export default {
   name: 'CreateRoomForm',
+  mixins: [randomName],
   data () {
     return {
       form: {
-        roomName: 'Random Name',
+        roomName: '',
         userName: '',
         mode: cardSets.fibonacci.name
       },
@@ -79,8 +81,23 @@ export default {
   },
   methods: {
     onSubmit () {
-      // Guarda el user en local storage
-      const userModel = createUserModel(this.form.userName)
+      const localStorageData = localStorage.getItem(localStorageKey)
+      let userModel = {}
+      // Si hay datos guardados
+      if (localStorageData) {
+        // Si el nombre guardado es distinto al del formulario
+        userModel = JSON.parse(localStorageData)
+        if (this.form.userName !== userModel.name) {
+          // Actualizamos solo el nombre y el updatedAt
+          userModel.name = this.form.userName
+          userModel.updatedAt = Date.now()
+        }
+      } else {
+        // Guarda el user en local storage
+        userModel = createUserModel(this.form.userName)
+      }
+      // Actualizamos localstorage con los nuevos datos
+      // Tanto si son nuevos datos, como si ya existia el user
       localStorage.setItem(localStorageKey, JSON.stringify(userModel))
 
       const room = {
@@ -99,10 +116,11 @@ export default {
         })
     }
   },
-  mounted () {
+  created () {
+    this.form.roomName = this.generateName()
     const localStorageData = JSON.parse(localStorage.getItem(localStorageKey))
     if (localStorageData) {
-      this.form.userName = localStorageData.userName
+      this.form.userName = localStorageData.name
     }
   }
 }

@@ -1,4 +1,4 @@
-import names from '@/assets/js/names'
+import names from '@/utils/names'
 const name1 = names.names1
 const name2 = names.names2
 
