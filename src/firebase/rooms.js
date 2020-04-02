@@ -33,8 +33,8 @@ export default {
 
   /**
    * Actualiza usuarios
-   * @param roomId
-   * @param users
+   * @param roomId {String}
+   * @param users {Object}
    * @returns {firebase.firestore.DocumentReference<T>}
    */
   updateUsers (roomId, users) {

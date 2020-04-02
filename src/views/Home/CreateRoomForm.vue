@@ -80,10 +80,14 @@ export default {
   methods: {
     onSubmit () {
       // Guarda el user en local storage
-      const localStorageObj = createUserModel(this.form.userName)
-      localStorage.setItem(localStorageKey, JSON.stringify(localStorageObj))
+      const userModel = createUserModel(this.form.userName)
+      localStorage.setItem(localStorageKey, JSON.stringify(userModel))
 
-      const roomData = createRoomModel(this.form)
+      const room = {
+        name: this.form.roomName,
+        mode: this.form.mode
+      }
+      const roomData = createRoomModel(room, userModel)
 
       rooms.create(roomData)
         .then((res) => {

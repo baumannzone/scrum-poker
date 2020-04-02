@@ -20,17 +20,16 @@ const createUserModel = (userName) => {
 
 /**
  * Modelo para crear una sala con un usuario
- * @param roomName {String}
- * @param userName {String}
- * @param mode {String} Nombre del modo
- * @returns {{createdAt: number, users: [], roomName: String, updatedAt: number}}
+ * @param room {Object}
+ * @param user {Object}
+ * @returns {{mode: String, createdAt: Number, name: String, users: [*], updatedAt: Number}}
  */
-const createRoomModel = ({ roomName, userName, mode }) => {
+const createRoomModel = (room, user) => {
   const now = Date.now()
   return {
-    name: roomName,
-    mode,
-    users: [createUserModel(userName)],
+    name: room.name,
+    mode: room.mode,
+    users: [user],
     createdAt: now,
     updatedAt: now
   }

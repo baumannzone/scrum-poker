@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <div>
+    <div v-if="room">
       <h3>Room #{{ room.name || roomId }}</h3>
       <hr>
       <h5>Room Data:</h5>
@@ -36,6 +36,7 @@
       </b-modal>
 
     </div>
+    <div v-else>Loading...</div>
   </b-container>
 </template>
 
@@ -47,9 +48,9 @@ export default {
   name: 'Room',
   data () {
     return {
-      room: {},
+      room: null,
       modalUserName: '',
-      hasLocalUserName: false
+      hasFirebaseData: false
     }
   },
   computed: {
@@ -57,12 +58,12 @@ export default {
       return this.$route.params.id
     },
     roomData () {
-      const { createdAt, updatedAt, mode, roomName } = this.room
+      const { createdAt, updatedAt, mode, name } = this.room
       return {
         createdAt,
         updatedAt,
         mode,
-        roomName
+        name
       }
     },
     roomUsers () {
@@ -70,63 +71,36 @@ export default {
     }
   },
   created () {
-    // Obtener info de sala
-    this.getRoom(this.roomId)
-
     // Cambios en tiempo real
     this.realTimeChanges()
 
     window.addEventListener('beforeunload', (event) => {
       const users = [...this.room.users]
-      const localStorageData = JSON.parse(localStorage.getItem(localStorageKey))
-      const userIndex = users.findIndex(user => user.id === localStorageData.userId)
-      console.log('userIndex')
-      console.log(userIndex)
+      const localUser = JSON.parse(localStorage.getItem(localStorageKey))
+      const userIndex = users.findIndex(user => user.id === localUser.id)
       if (userIndex > -1) {
         users.splice(userIndex, 1)
+        // Actualiza en Firebase con el usuario borrado
+        rooms.updateUsers(this.roomId, { users })
       }
-      console.log('New users...:')
-      users.map(u => {
-        console.log(u.name, u.id)
-      })
-
-      // // Guarda en Firebase
-      // rooms.updateUsers(this.roomId, { users })
-      //   .then(() => {
-      //     this.userNameSaved = true
-      //     console.log('Document successfully written!')
-      //     this.hideModal()
-      //   })
-      //   .catch((error) => {
-      //     console.error('Error writing document: ', error)
-      //   })
     })
   },
-  mounted () {
-    const localStorageData = localStorage.getItem(localStorageKey)
-    if (!localStorageData) {
-      this.hasLocalUserName = false
-      this.showModal()
-    } else {
-      this.hasLocalUserName = true
-    }
-  },
   methods: {
-    getRoom (roomId) {
-      rooms.get(roomId)
-        .then((doc) => {
-          if (doc.exists) {
-            // console.log('Document data:', doc.data())
-            this.room = doc.data()
-          } else {
-            // doc.data() will be undefined in this case
-            // console.log('No such document!', 404)
-          }
-        })
-        .catch((error) => {
-          console.error('Error getting document:', error)
-        })
-    },
+    // getRoom (roomId) {
+    //   rooms.get(roomId)
+    //     .then((doc) => {
+    //       if (doc.exists) {
+    //         // console.log('Document data:', doc.data())
+    //         this.room = doc.data()
+    //       } else {
+    //         // doc.data() will be undefined in this case
+    //         // console.log('No such document!', 404)
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.error('Error getting document:', error)
+    //     })
+    // },
     onSubmit () {
       const userModel = createUserModel(this.modalUserName)
 
@@ -139,7 +113,6 @@ export default {
       // Guarda en Firebase
       rooms.updateUsers(this.roomId, { users })
         .then(() => {
-          this.userNameSaved = true
           console.log('Document successfully written!')
           this.hideModal()
         })
@@ -158,13 +131,59 @@ export default {
       rooms.ref.doc(this.roomId)
         .onSnapshot((doc) => {
           // console.log('Current data: ', doc.data())
-          this.room.users = doc.data().users
+          console.log('Data: ', doc.data())
+          this.room = doc.data()
+          if (!this.hasFirebaseData) {
+            this.hasFirebaseData = true
+          }
         })
     },
     beforeCloseModal (bvModalEvt) {
-      if (!this.userNameSaved) {
+      // Si no hay nombre en el formulario del modal
+      if (!this.modalUserName) {
+        // Evitamos cerrar el modal
         bvModalEvt.preventDefault()
+        // Enviamos el form, para que salte el error de required
         this.$refs['my-submit'].click()
+      }
+    },
+    saveUserInFirebase (user) {
+      const users = [...this.room.users]
+      users.push(user)
+
+      // Guarda en Firebase
+      rooms.updateUsers(this.roomId, { users })
+        .then(() => {
+          console.log('Document successfully written!')
+        })
+        .catch((error) => {
+          console.error('Error writing document: ', error)
+        })
+    }
+  },
+  watch: {
+    hasFirebaseData (newVal) {
+      // Cuando tengamos los datos de la sala
+      if (newVal) {
+        const localStorageData = localStorage.getItem(localStorageKey)
+        if (!localStorageData) {
+          this.showModal()
+        } else {
+          console.log('Datos locales: ', localStorageData)
+          const localStorageDataParsed = JSON.parse(localStorageData)
+
+          // Comprobar si el usuario local está en la lista de usuarios firebase
+          const users = [...this.room.users]
+          const user = users.find(u => u.id === localStorageDataParsed.id)
+
+          // El usuario está en local, pero no en firebase
+          if (!user) {
+            // Guardar usuario
+            this.saveUserInFirebase(localStorageDataParsed)
+          } else {
+            console.log('Usuario ya registrado')
+          }
+        }
       }
     }
   }
