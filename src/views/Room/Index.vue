@@ -14,7 +14,7 @@
         <li v-for="(user, key) in roomUsers" :key="key"> {{ user.name }}</li>
       </ul>
 
-      <b-modal ref="my-modal" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
+      <b-modal v-model="modalShow" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
         <b-form @submit.prevent="onSubmit">
           <b-form-group
             id="input-group-1"
@@ -48,9 +48,11 @@ export default {
   name: 'Room',
   data () {
     return {
+      modalShow: false,
       room: null,
       modalUserName: '',
-      hasFirebaseData: false
+      hasFirebaseData: false,
+      isMounted: false
     }
   },
   computed: {
@@ -78,12 +80,17 @@ export default {
       const users = [...this.room.users]
       const localUser = JSON.parse(localStorage.getItem(localStorageKey))
       const userIndex = users.findIndex(user => user.id === localUser.id)
+      // Si el usuario local está en firebase
       if (userIndex > -1) {
+        // Borrar de la lista de usuarios
         users.splice(userIndex, 1)
         // Actualiza en Firebase con el usuario borrado
         rooms.updateUsers(this.roomId, { users })
       }
     })
+  },
+  mounted () {
+    this.isMounted = true
   },
   methods: {
     // getRoom (roomId) {
@@ -121,10 +128,10 @@ export default {
         })
     },
     showModal () {
-      this.$refs['my-modal'].show()
+      this.modalShow = true
     },
     hideModal () {
-      this.$refs['my-modal'].hide()
+      this.modalShow = false
     },
     realTimeChanges () {
       // Realtime changes
@@ -159,31 +166,41 @@ export default {
         .catch((error) => {
           console.error('Error writing document: ', error)
         })
+    },
+    isMountedAndHasData () {
+      const localStorageData = localStorage.getItem(localStorageKey)
+      if (!localStorageData) {
+        this.showModal()
+      } else {
+        console.log('Datos locales: ', localStorageData)
+        const localStorageDataParsed = JSON.parse(localStorageData)
+
+        // Comprobar si el usuario local está en la lista de usuarios firebase
+        const users = [...this.room.users]
+        const user = users.find(u => u.id === localStorageDataParsed.id)
+
+        // El usuario está en local, pero no en firebase
+        if (!user) {
+          // Guardar usuario
+          this.saveUserInFirebase(localStorageDataParsed)
+        } else {
+          console.log('Usuario ya registrado')
+        }
+      }
     }
   },
   watch: {
     hasFirebaseData (newVal) {
+      console.log('CON DATOS')
       // Cuando tengamos los datos de la sala
-      if (newVal) {
-        const localStorageData = localStorage.getItem(localStorageKey)
-        if (!localStorageData) {
-          this.showModal()
-        } else {
-          console.log('Datos locales: ', localStorageData)
-          const localStorageDataParsed = JSON.parse(localStorageData)
-
-          // Comprobar si el usuario local está en la lista de usuarios firebase
-          const users = [...this.room.users]
-          const user = users.find(u => u.id === localStorageDataParsed.id)
-
-          // El usuario está en local, pero no en firebase
-          if (!user) {
-            // Guardar usuario
-            this.saveUserInFirebase(localStorageDataParsed)
-          } else {
-            console.log('Usuario ya registrado')
-          }
-        }
+      if (this.hasFirebaseData && this.isMounted) {
+        this.isMountedAndHasData()
+      }
+    },
+    isMounted (newVal) {
+      console.log('MONTADO')
+      if (this.isMounted && this.hasFirebaseData) {
+        this.isMountedAndHasData()
       }
     }
   }
