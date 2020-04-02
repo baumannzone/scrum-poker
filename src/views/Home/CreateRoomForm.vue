@@ -58,7 +58,7 @@ export default {
       form: {
         roomName: 'Random Name',
         userName: '',
-        mode: null
+        mode: cardSets.fibonacci.name
       },
       options: [
         { value: null, text: 'Elige una opción' },

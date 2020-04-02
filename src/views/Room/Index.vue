@@ -1,18 +1,20 @@
 <template>
   <b-container>
     <div>
-      <h3>Room #{{ room.roomName || roomId }}</h3>
+      <h3>Room #{{ room.name || roomId }}</h3>
       <hr>
       <h5>Room Data:</h5>
       <ul class="list-unstyled">
+        <li>ID: {{ roomId }}</li>
         <li v-for="(item, key) in roomData" :key="key"> {{key}}: {{ item }}</li>
       </ul>
+
       <h5>Users:</h5>
       <ul class="list-unstyled">
-        <li v-for="(user, key) in roomUsers" :key="key"> {{ user.userName }}</li>
+        <li v-for="(user, key) in roomUsers" :key="key"> {{ user.name }}</li>
       </ul>
 
-      <b-modal ref="my-modal" hide-footer title="¿Cómo te llamas?">
+      <b-modal ref="my-modal" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
         <b-form @submit.prevent="onSubmit">
           <b-form-group
             id="input-group-1"
@@ -22,29 +24,32 @@
           >
             <b-form-input
               id="input-1"
-              v-model="name"
+              v-model="modalUserName"
               type="text"
               required
               placeholder="Nombre"
             ></b-form-input>
           </b-form-group>
 
-          <b-button type="submit" variant="primary">Guardar</b-button>
+          <b-button type="submit" variant="primary" ref="my-submit">Guardar</b-button>
         </b-form>
       </b-modal>
+
     </div>
   </b-container>
 </template>
 
 <script>
 import rooms from '@/firebase/rooms'
+import { localStorageKey, createUserModel } from '@/utils/definitions'
 
 export default {
   name: 'Room',
   data () {
     return {
       room: {},
-      name: ''
+      modalUserName: '',
+      hasLocalUserName: false
     }
   },
   computed: {
@@ -53,27 +58,57 @@ export default {
     },
     roomData () {
       const { createdAt, updatedAt, mode, roomName } = this.room
-      return { createdAt, updatedAt, mode, roomName }
+      return {
+        createdAt,
+        updatedAt,
+        mode,
+        roomName
+      }
     },
     roomUsers () {
       return this.room.users
     }
   },
   created () {
-    window.addEventListener('beforeunload', (event) => {
-      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< before unload >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-      console.log(event)
-      // event.returnValue = 'Are you sure you want to leave?'
-    })
-
     // Obtener info de sala
     this.getRoom(this.roomId)
 
+    // Cambios en tiempo real
     this.realTimeChanges()
+
+    window.addEventListener('beforeunload', (event) => {
+      const users = [...this.room.users]
+      const localStorageData = JSON.parse(localStorage.getItem(localStorageKey))
+      const userIndex = users.findIndex(user => user.id === localStorageData.userId)
+      console.log('userIndex')
+      console.log(userIndex)
+      if (userIndex > -1) {
+        users.splice(userIndex, 1)
+      }
+      console.log('New users...:')
+      users.map(u => {
+        console.log(u.name, u.id)
+      })
+
+      // // Guarda en Firebase
+      // rooms.updateUsers(this.roomId, { users })
+      //   .then(() => {
+      //     this.userNameSaved = true
+      //     console.log('Document successfully written!')
+      //     this.hideModal()
+      //   })
+      //   .catch((error) => {
+      //     console.error('Error writing document: ', error)
+      //   })
+    })
   },
   mounted () {
-    if (!localStorage.getItem('_scrum-poker-online-userName')) {
+    const localStorageData = localStorage.getItem(localStorageKey)
+    if (!localStorageData) {
+      this.hasLocalUserName = false
       this.showModal()
+    } else {
+      this.hasLocalUserName = true
     }
   },
   methods: {
@@ -93,12 +128,19 @@ export default {
         })
     },
     onSubmit () {
-      const users = this.room.users
-      users.push({ name: this.name, created: Date.now() })
+      const userModel = createUserModel(this.modalUserName)
+
+      // Guarda en Local
+      localStorage.setItem(localStorageKey, JSON.stringify(userModel))
+
+      const users = [...this.room.users]
+      users.push(userModel)
+
+      // Guarda en Firebase
       rooms.updateUsers(this.roomId, { users })
         .then(() => {
-          localStorage.setItem('_scrum-poker-online-userName', this.name)
-          // console.log('Document successfully written!')
+          this.userNameSaved = true
+          console.log('Document successfully written!')
           this.hideModal()
         })
         .catch((error) => {
@@ -118,6 +160,12 @@ export default {
           // console.log('Current data: ', doc.data())
           this.room.users = doc.data().users
         })
+    },
+    beforeCloseModal (bvModalEvt) {
+      if (!this.userNameSaved) {
+        bvModalEvt.preventDefault()
+        this.$refs['my-submit'].click()
+      }
     }
   }
 }

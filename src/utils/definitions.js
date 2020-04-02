@@ -11,8 +11,8 @@ const createUserModel = (userName) => {
   const now = Date.now()
 
   return {
-    userId: nanoid(20),
-    userName: userName,
+    id: nanoid(20),
+    name: userName,
     createdAt: now,
     updatedAt: now
   }
@@ -28,7 +28,7 @@ const createUserModel = (userName) => {
 const createRoomModel = ({ roomName, userName, mode }) => {
   const now = Date.now()
   return {
-    roomName,
+    name: roomName,
     mode,
     users: [createUserModel(userName)],
     createdAt: now,
