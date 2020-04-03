@@ -1,13 +1,18 @@
 <template>
   <b-container>
     <div v-if="room">
-      <h3>Room #{{ room.name || roomId }}</h3>
-      <hr>
+      <div class="d-flex justify-content-between">
+        <h3>Room: {{ room.name }} </h3>
+        <div>
+          <b-badge variant="info"># {{ roomId }}</b-badge>
+        </div>
+      </div>
+      <!--<hr>
       <h5>Info Sala:</h5>
       <ul class="list-unstyled">
         <li>ID: {{ roomId }}</li>
         <li v-for="(item, key) in roomData" :key="key"> {{key}}: {{ item }}</li>
-      </ul>
+      </ul>-->
 
       <h5>Usuarios:</h5>
       <ul class="list-unstyled">
@@ -52,8 +57,6 @@ import rooms from '@/firebase/rooms'
 import { createUserModel, localStorageKey } from '@/utils/definitions'
 import CardSet from './CardSet'
 
-let hasFirebaseData = false
-
 export default {
   name: 'Room',
   components: { CardSet },
@@ -61,7 +64,8 @@ export default {
     return {
       modalShow: false,
       room: null,
-      modalUserName: ''
+      modalUserName: '',
+      hasFirebaseData: false
     }
   },
   computed: {
@@ -82,6 +86,8 @@ export default {
     }
   },
   created () {
+    this.$store.commit('SET_CURRENT_ROOM', this.$route.params.id)
+
     // Cambios en tiempo real
     this.realTimeChanges()
 
@@ -144,8 +150,8 @@ export default {
         .onSnapshot((doc) => {
           // console.log('Current data: ', doc.data())
           this.room = doc.data()
-          if (!hasFirebaseData) {
-            hasFirebaseData = true
+          if (!this.hasFirebaseData) {
+            this.hasFirebaseData = true
             this.roomHasData()
           }
         })
@@ -205,6 +211,9 @@ export default {
     }
   },
   beforeRouteLeave (to, from, next) {
+    this.$store.commit('SET_CURRENT_ROOM', null)
+    this.$store.commit('SET_CURRENT_USER', null)
+
     // Limpiar datos de Firebase
     const users = [...this.room.users]
     const localUser = JSON.parse(localStorage.getItem(localStorageKey))
