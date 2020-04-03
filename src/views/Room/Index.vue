@@ -167,7 +167,7 @@ export default {
       // Guarda en Firebase
       rooms.updateUsers(this.roomId, { users })
         .then(() => {
-          console.log('Document successfully written!')
+          // console.log('Document successfully written!')
         })
         .catch((error) => {
           this.$bvToast.toast('Error', {

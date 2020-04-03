@@ -1,5 +1,7 @@
 <template>
-  <div><h1>{{mode}}</h1></div>
+  <div class="card-set">
+    <h1>{{mode}}</h1>
+  </div>
 </template>
 
 <script>
