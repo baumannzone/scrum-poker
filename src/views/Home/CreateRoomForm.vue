@@ -112,7 +112,12 @@ export default {
           this.$router.push({ name: 'Room', params: { id: res.id } })
         })
         .catch(function (error) {
-          console.error('Error writing document: ', error)
+          // console.error('Error writing document: ', error)
+          this.$bvToast.toast('Error', {
+            title: `Error writing document: ${error}`,
+            variant: 'danger',
+            solid: true
+          })
         })
     }
   },

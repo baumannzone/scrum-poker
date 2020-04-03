@@ -97,7 +97,7 @@ export default {
         users.splice(userIndex, 1)
         // Actualiza en Firebase con el usuario borrado
         rooms.updateUsers(this.roomId, { users })
-        console.debug('Borrando user...')
+        // console.debug('Borrando user...')
       }
     })
   },
@@ -216,7 +216,7 @@ export default {
       users.splice(userIndex, 1)
       // Actualiza en Firebase con el usuario borrado
       rooms.updateUsers(this.roomId, { users })
-      console.debug('Borrando user...')
+      // console.debug('Borrando user...')
     }
     next()
   }
