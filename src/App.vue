@@ -1,15 +1,19 @@
 <template>
   <div id="app">
     <TheNavBar/>
-    <router-view/>
+    <div class="mb-footer">
+      <router-view/>
+    </div>
+    <TheFooter/>
   </div>
 </template>
 
 <script>
-import TheNavBar from './TheNavBar'
+import TheNavBar from './components/TheNavBar'
+import TheFooter from './components/TheFooter'
 
 export default {
-  components: { TheNavBar }
+  components: { TheNavBar, TheFooter }
 }
 </script>
 
@@ -19,4 +23,6 @@ export default {
     -webkit-font-smoothing antialiased
     -moz-osx-font-smoothing grayscale
     color #2c3e50
+    .mb-footer
+      margin-bottom 120px
 </style>
