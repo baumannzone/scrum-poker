@@ -1,45 +1,23 @@
 import { db } from '@/firebase/index'
+
 const roomsRef = db.collection('rooms')
 
 export default {
+  roomsRef,
 
-  ref: roomsRef,
-
-  /**
-   * Crea una sala
-   * @param room {Object} Datos de la sala
-   * @returns {Promise<firebase.firestore.DocumentReference<T>>}
-   */
-  create (room) {
-    return roomsRef.add(room)
+  createRoom (roomId, roomData) {
+    return roomsRef.doc(roomId).set(roomData)
   },
 
-  /**
-   * Obtiene todas las salas
-   * @returns {Promise<firebase.firestore.QuerySnapshot<T>>}
-   */
   list () {
     return roomsRef.get()
   },
 
-  /**
-   * Obtiene una sala por `id`
-   * @param roomId {String}
-   * @returns {Promise<firebase.firestore.DocumentSnapshot<T>>}
-   */
   get (roomId) {
     return roomsRef.doc(roomId).get()
   },
 
-  /**
-   * Actualiza usuarios
-   * @param roomId {String}
-   * @param users {Object}
-   * @returns {firebase.firestore.DocumentReference<T>}
-   */
-  updateUsers (roomId, users) {
-    return roomsRef.doc(roomId)
-      .set(users, { merge: true })
+  generateRoomDoc () {
+    return roomsRef.doc()
   }
-
 }

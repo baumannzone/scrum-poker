@@ -6,11 +6,11 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     currentUser: null,
-    currentRoom: null
+    currentRoom: null,
+    currentTask: null
   },
   mutations: {
     SET_CURRENT_USER (state, payload) {
-      console.log(payload)
       if (!payload) {
         state.currentUser = null
       } else {
@@ -22,6 +22,13 @@ export default new Vuex.Store({
         state.currentRoom = null
       } else {
         state.currentRoom = payload
+      }
+    },
+    SET_CURRENT_TASK (state, payload) {
+      if (!payload) {
+        state.currentTask = null
+      } else {
+        state.currentTask = payload
       }
     }
   }

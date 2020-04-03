@@ -5,7 +5,11 @@
     </button>
   </div>
 </template>
+
 <script>
+import { mapState } from 'vuex'
+import rooms from '@/firebase/rooms'
+
 export default {
   name: 'CardSetItem',
   props: {
@@ -14,9 +18,28 @@ export default {
       type: [Number, String]
     }
   },
+  computed: {
+    ...mapState({
+      roomId: 'currentRoom',
+      currentUser: 'currentUser',
+      currentTask: 'currentTask'
+    })
+  },
   methods: {
     onClick (value) {
-      console.debug(value)
+      const data = {
+        userId: this.currentUser.id,
+        task: this.currentTask,
+        value: value
+      }
+      rooms.updateVoting(this.roomId, data)
+        .then(res => {
+          console.log('res')
+          console.log(res)
+        })
+        .catch(err => {
+          console.warn(err)
+        })
     }
   }
 }

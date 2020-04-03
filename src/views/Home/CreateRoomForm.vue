@@ -49,8 +49,11 @@
 
 <script>
 import randomName from '@/mixins/randomName'
+
 import rooms from '@/firebase/rooms'
-import { localStorageKey, createUserModel, createRoomModel, cardSets } from '@/utils/definitions'
+// import { addUser } from '@/firebase/users'
+
+import { localStorageKey, createRoomModel, cardSets } from '@/utils/definitions'
 
 export default {
   name: 'CreateRoomForm',
@@ -63,17 +66,26 @@ export default {
         mode: cardSets.fibonacci.name
       },
       options: [
-        { value: null, text: 'Elige una opción' },
+        {
+          value: null,
+          text: 'Elige una opción'
+        },
         {
           label: cardSets.fibonacci.name.toUpperCase(),
           options: [
-            { value: cardSets.fibonacci.name, text: cardSets.fibonacci.values }
+            {
+              value: cardSets.fibonacci.name,
+              text: cardSets.fibonacci.values
+            }
           ]
         },
         {
           label: cardSets.decimal.name.toUpperCase(),
           options: [
-            { value: cardSets.decimal.name, text: cardSets.decimal.values }
+            {
+              value: cardSets.decimal.name,
+              text: cardSets.decimal.values
+            }
           ]
         }
       ]
@@ -81,35 +93,29 @@ export default {
   },
   methods: {
     onSubmit () {
-      const localStorageData = localStorage.getItem(localStorageKey)
-      let userModel = {}
-      // Si hay datos guardados
-      if (localStorageData) {
-        // Si el nombre guardado es distinto al del formulario
-        userModel = JSON.parse(localStorageData)
-        if (this.form.userName !== userModel.name) {
-          // Actualizamos solo el nombre y el updatedAt
-          userModel.name = this.form.userName
-          userModel.updatedAt = Date.now()
-        }
-      } else {
-        // Guarda el user en local storage
-        userModel = createUserModel(this.form.userName)
-      }
-      // Actualizamos localstorage con los nuevos datos
-      // Tanto si son nuevos datos, como si ya existia el user
-      localStorage.setItem(localStorageKey, JSON.stringify(userModel))
+      // const userModel = createUserModel(this.form.userName)
+      localStorage.setItem(localStorageKey, JSON.stringify({ name: this.form.userName }))
 
       const room = {
         name: this.form.roomName,
         mode: this.form.mode
       }
-      const roomData = createRoomModel(room, userModel)
+      const roomData = createRoomModel(room)
+      console.log(roomData)
+      console.log('ROOM ID:')
+      const roomId = rooms.generateRoomDoc().id
+      console.log(roomId)
 
-      rooms.create(roomData)
+      const promises = [
+        rooms.createRoom(roomId, roomData)
+        // addUser(roomId, userModel)
+      ]
+
+      Promise.all(promises)
         .then((res) => {
-          // console.log(res)
-          this.$router.push({ name: 'Room', params: { id: res.id } })
+          console.log('res')
+          console.log(res)
+          // this.$router.push({ name: 'Room', params: { id: roomId } })
         })
         .catch(function (error) {
           // console.error('Error writing document: ', error)

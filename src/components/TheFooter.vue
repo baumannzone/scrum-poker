@@ -16,4 +16,5 @@ export default {
 <style lang="stylus">
   #footer
     text-align center
+    border-top 2px solid #eee
 </style>

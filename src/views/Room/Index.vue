@@ -21,6 +21,10 @@
 
       <hr class="my-5">
 
+      <CurrentTaskForm/>
+
+      <hr class="my-5">
+
       <CardSet :mode="room.mode"/>
 
       <b-modal v-model="modalShow" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
@@ -56,10 +60,11 @@
 import rooms from '@/firebase/rooms'
 import { createUserModel, localStorageKey } from '@/utils/definitions'
 import CardSet from './CardSet'
+import CurrentTaskForm from './CurrentTaskForm'
 
 export default {
   name: 'Room',
-  components: { CardSet },
+  components: { CurrentTaskForm, CardSet },
   data () {
     return {
       modalShow: false,
