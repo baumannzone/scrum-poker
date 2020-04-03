@@ -16,6 +16,8 @@
 
       <hr class="my-5">
 
+      <CardSet :mode="room.mode"/>
+
       <b-modal v-model="modalShow" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
         <b-form @submit.prevent="onSubmit">
           <b-form-group
@@ -47,12 +49,14 @@
 
 <script>
 import rooms from '@/firebase/rooms'
-import { localStorageKey, createUserModel } from '@/utils/definitions'
+import { createUserModel, localStorageKey } from '@/utils/definitions'
+import CardSet from './CardSet'
 
 let hasFirebaseData = false
 
 export default {
   name: 'Room',
+  components: { CardSet },
   data () {
     return {
       modalShow: false,
@@ -201,12 +205,20 @@ export default {
       }
     }
   },
-  beforeDestroy () {
+  beforeRouteLeave (to, from, next) {
     // Limpiar datos de Firebase
+    const users = [...this.room.users]
+    const localUser = JSON.parse(localStorage.getItem(localStorageKey))
+    const userIndex = users.findIndex(user => user.id === localUser.id)
+    // Si el usuario local está en firebase
+    if (userIndex !== -1) {
+      // Borrar de la lista de usuarios
+      users.splice(userIndex, 1)
+      // Actualiza en Firebase con el usuario borrado
+      rooms.updateUsers(this.roomId, { users })
+      console.debug('Borrando user...')
+    }
+    next()
   }
 }
 </script>
-
-<style scoped>
-
-</style>
