@@ -59,9 +59,14 @@ const cardSets = {
   }
 }
 
+const currentCardSet = (cardSet) => {
+  return cardSets[cardSet]
+}
+
 export {
   localStorageKey,
   createUserModel,
   createRoomModel,
-  cardSets
+  cardSets,
+  currentCardSet
 }

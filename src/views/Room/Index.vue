@@ -61,8 +61,7 @@ export default {
     return {
       modalShow: false,
       room: null,
-      modalUserName: '',
-      currentUser: null
+      modalUserName: ''
     }
   },
   computed: {
@@ -118,7 +117,7 @@ export default {
         .then(() => {
           // console.log('Document successfully written!')
           // Guardar usuario actual
-          this.currentUser = userModel
+          this.$store.commit('SET_CURRENT_USER', userModel)
           // Limpiar Form
           this.modalUserName = ''
           // Ocultar modal
@@ -201,7 +200,7 @@ export default {
           this.saveUserInFirebase(localStorageDataParsed)
         }
         // Guardar usuario actual
-        this.currentUser = localStorageDataParsed
+        this.$store.commit('SET_CURRENT_USER', localStorageDataParsed)
       }
     }
   },
