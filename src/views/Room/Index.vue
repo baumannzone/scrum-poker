@@ -85,6 +85,11 @@ export default {
     })
   },
   created () {
+    const localUserName = localStorage.getItem(localStorageKey)
+    if (localUserName) {
+      this.modalUserName = JSON.parse(localUserName).name
+    }
+
     // Guarda el ID de la sala
     this.$store.commit('SET_CURRENT_ROOM', this.$route.params.id)
 
@@ -97,27 +102,33 @@ export default {
   methods: {
     realTimeChanges () {
       // Room Data
-      roomsRef.doc(this.roomId)
-        .onSnapshot((doc) => {
-          this.room = doc.data()
-        })
+      // roomsRef.doc(this.roomId)
+      //   .onSnapshot((doc) => {
+      //     this.room = doc.data()
+      //   })
+      this.room = {}
 
       // Users
       roomsRef.doc(this.roomId).collection('users')
         .onSnapshot((querySnapshot) => {
+          console.log(querySnapshot)
           const users = []
           querySnapshot.forEach(doc => {
             users.push({ ...doc.data(), id: doc.id })
           })
           this.users = users
+        }, function (error) {
+          // ...
+          console.log('error')
+          console.log(error)
         })
     },
     onSubmit () {
       // Crear modelo del usuario
       const userModel = createUserModel(this.modalUserName)
 
-      const userName = { name: this.modalUserName }
       // Guarda en Local
+      const userName = { name: this.modalUserName }
       localStorage.setItem(localStorageKey, JSON.stringify(userName))
 
       // Guarda en Firebase
