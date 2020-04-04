@@ -7,17 +7,21 @@
           <b-badge variant="info"># {{ roomId }}</b-badge>
         </div>
       </div>
-      <!--<hr>
-      <h5>Info Sala:</h5>
-      <ul class="list-unstyled">
-        <li>ID: {{ roomId }}</li>
-        <li v-for="(item, key) in roomData" :key="key"> {{key}}: {{ item }}</li>
-      </ul>-->
-
-      <h5>Usuarios:</h5>
-      <ul class="list-unstyled">
-        <li v-for="(user, key) in users" :key="key"> {{ user.name }}</li>
-      </ul>
+      <b-row v-if="2<0">
+        <hr>
+        <b-col cols="12" md="6">
+          <h5>Usuarios:</h5>
+          <ul class="list-unstyled">
+            <li v-for="(user, key) in users" :key="key"> {{ user.name }}</li>
+          </ul>
+        </b-col>
+        <b-col cols="12" md="6">
+          <h5>Info Sala:</h5>
+          <ul class="list-unstyled">
+            <li v-for="(item, key) in room" :key="key"> {{key}}: {{ item }}</li>
+          </ul>
+        </b-col>
+      </b-row>
 
       <hr class="my-5">
 

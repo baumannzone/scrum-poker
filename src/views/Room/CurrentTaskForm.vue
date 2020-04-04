@@ -1,43 +1,52 @@
 <template>
   <div class="current-task-form">
 
-    <b-row>
-
-      <b-col sm="12" lg="6">
-        <b-form inline @submit.prevent="onSubmit">
-          <label class="sr-only" for="task">Tarea</label>
-          <b-input-group prepend="#" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-input v-model="task" id="task" placeholder="Tarea" required></b-input>
-          </b-input-group>
-
+    <div>
+      <b-form @submit.prevent="onSubmit">
+        <div class="d-flex">
+          <div class="flex-grow-1 mr-2">
+            <label class="sr-only" for="task">Tarea</label>
+            <b-input-group prepend="#" class="mb-2 mr-sm-2 mb-sm-0">
+              <b-input v-model="task" id="task" placeholder="Tarea a votar" required></b-input>
+            </b-input-group>
+          </div>
           <b-button type="submit" variant="primary">Actualizar tarea</b-button>
-        </b-form>
-      </b-col>
-
-      <b-col sm="12" lg="6">
-        <div class="mt-3 mt-lg-0" v-show="currentTask">
-          <p class="text-monospace"><b>Tarea</b>: {{ currentTask }}</p>
         </div>
-      </b-col>
+      </b-form>
+    </div>
 
-    </b-row>
+    <br>
+
+    <b-card border-variant="info"
+      header="TAREA ACTUAL"
+      header-bg-variant="info"
+      header-text-variant="white"
+      align="center">
+      <b-card-text>
+        <h3># {{ currentTask }}</h3>
+      </b-card-text>
+    </b-card>
 
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'CurrentTaskForm',
   data () {
     return {
-      task: '',
-      currentTask: ''
+      task: ''
     }
+  },
+  computed: {
+    ...mapState(['currentTask'])
   },
   methods: {
     onSubmit () {
-      this.currentTask = this.task
-      this.$store.commit('SET_CURRENT_TASK', this.currentTask)
+      this.$store.commit('SET_CURRENT_TASK', this.task)
+      this.task = ''
     }
   }
 }
