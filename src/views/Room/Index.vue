@@ -75,13 +75,15 @@ export default {
     return {
       modalShow: true,
       modalUserName: '',
+      userSaved: false,
       room: null,
       users: null
     }
   },
   computed: {
     ...mapState({
-      roomId: 'currentRoom'
+      roomId: 'currentRoom',
+      currentUser: 'currentUser'
     })
   },
   created () {
@@ -97,7 +99,9 @@ export default {
     this.realTimeChanges()
 
     // Antes de salir, borrar el user en firebase
-    window.addEventListener('beforeunload', (event) => {})
+    window.addEventListener('beforeunload', (event) => {
+      users.deleteUser(this.roomId, this.currentUser.id)
+    })
   },
   methods: {
     realTimeChanges () {
@@ -116,7 +120,6 @@ export default {
       // Users
       roomsRef.doc(this.roomId).collection('users')
         .onSnapshot((querySnapshot) => {
-          console.log(querySnapshot)
           const users = []
           querySnapshot.forEach(doc => {
             users.push({ ...doc.data(), id: doc.id })
@@ -142,6 +145,7 @@ export default {
       users.addUser(this.roomId, userModel)
         .then((res) => {
           this.$store.commit('SET_CURRENT_USER', { ...userModel, id: res.id })
+          this.userSaved = true
           this.modalShow = false
         })
         .catch((error) => {
@@ -154,8 +158,8 @@ export default {
         })
     },
     beforeCloseModal (bvModalEvt) {
-      // Si no hay nombre en el formulario del modal
-      if (!this.modalUserName) {
+      // Si no se ha guardado el nombre
+      if (!this.userSaved) {
         // Evitamos cerrar el modal
         bvModalEvt.preventDefault()
         // Enviamos el form, para que salte el error de required
@@ -164,6 +168,7 @@ export default {
     }
   },
   beforeRouteLeave (to, from, next) {
+    users.deleteUser(this.roomId, this.currentUser.id)
     this.$store.commit('SET_CURRENT_ROOM', null)
     this.$store.commit('SET_CURRENT_USER', null)
     next()
