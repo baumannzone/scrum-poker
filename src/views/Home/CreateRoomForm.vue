@@ -17,22 +17,6 @@
     </b-form-group>
 
     <b-form-group
-      id="input-group-2"
-      label="Nombre usuario:"
-      label-for="input-2"
-      description="Con este nombre te indentificaran los demás"
-    >
-      <b-form-input
-        id="input-1"
-        v-model.trim="form.userName"
-        type="text"
-        required
-        min="2"
-        placeholder="Tu nombre"
-      ></b-form-input>
-    </b-form-group>
-
-    <b-form-group
       id="input-group-3"
       label="Set de cartas:"
       label-for="input-3"
@@ -44,16 +28,16 @@
     <div class="d-flex justify-content-end">
       <b-button type="submit" variant="primary">Crear sala</b-button>
     </div>
+
   </b-form>
 </template>
 
 <script>
 import randomName from '@/mixins/randomName'
 
-import rooms from '@/firebase/rooms'
-// import { addUser } from '@/firebase/users'
+import rooms from '../../api/rooms'
 
-import { localStorageKey, createRoomModel, cardSets } from '@/utils/definitions'
+import { createRoomModel, cardSets } from '@/utils/definitions'
 
 export default {
   name: 'CreateRoomForm',
@@ -93,29 +77,15 @@ export default {
   },
   methods: {
     onSubmit () {
-      // const userModel = createUserModel(this.form.userName)
-      localStorage.setItem(localStorageKey, JSON.stringify({ name: this.form.userName }))
-
       const room = {
         name: this.form.roomName,
         mode: this.form.mode
       }
       const roomData = createRoomModel(room)
-      console.log(roomData)
-      console.log('ROOM ID:')
-      const roomId = rooms.generateRoomDoc().id
-      console.log(roomId)
 
-      const promises = [
-        rooms.createRoom(roomId, roomData)
-        // addUser(roomId, userModel)
-      ]
-
-      Promise.all(promises)
+      rooms.createRoom(roomData)
         .then((res) => {
-          console.log('res')
-          console.log(res)
-          // this.$router.push({ name: 'Room', params: { id: roomId } })
+          this.$router.push({ name: 'Room', params: { id: res.id } })
         })
         .catch(function (error) {
           // console.error('Error writing document: ', error)
@@ -129,10 +99,6 @@ export default {
   },
   created () {
     this.form.roomName = this.generateName()
-    const localStorageData = JSON.parse(localStorage.getItem(localStorageKey))
-    if (localStorageData) {
-      this.form.userName = localStorageData.name
-    }
   }
 }
 </script>

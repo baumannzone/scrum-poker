@@ -6,7 +6,6 @@
         <b-col cols="12" md="6">
           <div>
             <h1>Crear Sala</h1>
-
             <CreateRoomForm/>
 
           </div>
@@ -24,21 +23,10 @@
 </template>
 
 <script>
-import rooms from '@/firebase/rooms'
 import CreateRoomForm from './CreateRoomForm'
 
 export default {
   name: 'Home',
-  components: { CreateRoomForm },
-  created () {
-    rooms.list()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // const roomData = { id: doc.id, ...doc.data() }
-          // doc.data() is never undefined for query doc snapshots
-          // console.log(roomData)
-        })
-      })
-  }
+  components: { CreateRoomForm }
 }
 </script>

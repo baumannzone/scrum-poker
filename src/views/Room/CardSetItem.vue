@@ -8,7 +8,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import rooms from '@/firebase/rooms'
+import rooms from '@/api/rooms'
 
 export default {
   name: 'CardSetItem',

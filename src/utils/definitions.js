@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid'
-
 const localStorageKey = '_scrum-poker-online-userName'
 
 /**
@@ -9,9 +7,7 @@ const localStorageKey = '_scrum-poker-online-userName'
  */
 const createUserModel = (userName) => {
   const now = Date.now()
-
   return {
-    id: nanoid(20),
     name: userName,
     createdAt: now,
     updatedAt: now
