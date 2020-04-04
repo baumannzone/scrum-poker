@@ -102,11 +102,16 @@ export default {
   methods: {
     realTimeChanges () {
       // Room Data
-      // roomsRef.doc(this.roomId)
-      //   .onSnapshot((doc) => {
-      //     this.room = doc.data()
-      //   })
-      this.room = {}
+      roomsRef.doc(this.roomId)
+        .onSnapshot((doc) => {
+          this.room = doc.data()
+        }, function (error) {
+          this.$bvToast.toast('Error', {
+            title: `Error onSnapshot: ${error}`,
+            variant: 'danger',
+            solid: true
+          })
+        })
 
       // Users
       roomsRef.doc(this.roomId).collection('users')
@@ -118,9 +123,11 @@ export default {
           })
           this.users = users
         }, function (error) {
-          // ...
-          console.log('error')
-          console.log(error)
+          this.$bvToast.toast('Error', {
+            title: `Error onSnapshot: ${error}`,
+            variant: 'danger',
+            solid: true
+          })
         })
     },
     onSubmit () {
@@ -147,12 +154,12 @@ export default {
         })
     },
     beforeCloseModal (bvModalEvt) {
-      // Enviamos el form, para que salte el error de required
-      this.$refs['my-submit'].click()
       // Si no hay nombre en el formulario del modal
       if (!this.modalUserName) {
         // Evitamos cerrar el modal
         bvModalEvt.preventDefault()
+        // Enviamos el form, para que salte el error de required
+        this.$refs['my-submit'].click()
       }
     }
   },
