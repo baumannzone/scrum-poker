@@ -27,11 +27,7 @@ export default {
   },
   methods: {
     onClick (value) {
-      const data = {
-        userId: this.currentUser.id,
-        task: this.currentTask,
-        value: value
-      }
+      const data = { userId: this.currentUser.id, task: this.currentTask, value: value }
       rooms.updateVoting(this.roomId, data)
         .then(res => {
           console.log('res')
