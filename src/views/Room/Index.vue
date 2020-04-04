@@ -112,6 +112,11 @@ export default {
       // Room Data
       roomsRef.doc(this.roomId)
         .onSnapshot((doc) => {
+          if (doc.data().currentTaskId) {
+            console.log('COMMIT DE TAREA')
+            this.$store.commit('SET_CURRENT_TASK', doc.data().currentTaskId)
+          }
+          console.log(doc.data())
           this.room = doc.data()
         }, function (error) {
           this.$bvToast.toast('Error', {
@@ -175,6 +180,7 @@ export default {
     users.deleteUser(this.roomId, this.currentUser.id)
     this.$store.commit('SET_CURRENT_ROOM', null)
     this.$store.commit('SET_CURRENT_USER', null)
+    this.$store.commit('SET_CURRENT_TASK', null)
     next()
   }
 }

@@ -32,6 +32,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import rooms from '@/api/rooms'
 
 export default {
   name: 'CurrentTaskForm',
@@ -41,12 +42,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentTask'])
+    ...mapState(['currentTask', 'currentRoom'])
   },
   methods: {
     onSubmit () {
-      this.$store.commit('SET_CURRENT_TASK', this.task)
-      this.task = ''
+      rooms.setCurrentTask(this.currentRoom, this.task)
+        .then((res) => {
+          console.log(res)
+          this.task = ''
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }

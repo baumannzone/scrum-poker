@@ -8,7 +8,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import rooms from '@/api/rooms'
+import tasks from '@/api/tasks'
 
 export default {
   name: 'CardSetItem',
@@ -27,10 +27,10 @@ export default {
   },
   methods: {
     onClick (value) {
-      const data = { userId: this.currentUser.id, task: this.currentTask, value: value }
-      rooms.updateVoting(this.roomId, data)
+      const voteData = { [this.currentUser.id]: value }
+      tasks.setVote(this.roomId, this.currentTask, voteData)
         .then(res => {
-          console.log('res')
+          console.log('<<<<<<<<<<<<<<<<res>>>>>>>>>>>>>>>>')
           console.log(res)
         })
         .catch(err => {
