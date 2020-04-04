@@ -25,7 +25,8 @@ const createRoomModel = (room) => {
     name: room.name,
     mode: room.mode,
     createdAt: now,
-    updatedAt: now
+    updatedAt: now,
+    currentTaskId: null
   }
 }
 
@@ -45,7 +46,7 @@ const cardSetNames = {
 const cardSets = {
   fibonacci: {
     name: cardSetNames.fibonacci,
-    values: [1, 2, 3, 5, 8, 13, 20, 40, 100, '?']
+    values: [1, 2, 3, 5, 8, 13, 20, 40, 100]
   },
   decimal: {
     name: cardSetNames.decimal,

@@ -10,7 +10,7 @@
               <b-input v-model="task" id="task" placeholder="Tarea a votar" required></b-input>
             </b-input-group>
           </div>
-          <b-button type="submit" variant="primary">Actualizar tarea</b-button>
+          <b-button type="submit" variant="primary">Asignar tarea</b-button>
         </div>
       </b-form>
     </div>

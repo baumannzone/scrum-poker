@@ -7,27 +7,14 @@
           <b-badge variant="info"># {{ roomId }}</b-badge>
         </div>
       </div>
-      <b-row v-if="2<0">
-        <hr>
-        <b-col cols="12" md="6">
-          <h5>Usuarios:</h5>
-          <ul class="list-unstyled">
-            <li v-for="(user, key) in users" :key="key"> {{ user.name }}</li>
-          </ul>
-        </b-col>
-        <b-col cols="12" md="6">
-          <h5>Info Sala:</h5>
-          <ul class="list-unstyled">
-            <li v-for="(item, key) in room" :key="key"> {{key}}: {{ item }}</li>
-          </ul>
-        </b-col>
-      </b-row>
 
-      <hr class="my-5">
+      <UsersTable v-if="users" :users="users"/>
+
+      <hr>
 
       <CurrentTaskForm/>
 
-      <hr class="my-5">
+      <hr>
 
       <CardSet :mode="room.mode"/>
 
@@ -69,12 +56,13 @@ import { createUserModel, localStorageKey } from '@/utils/definitions'
 
 import CardSet from './CardSet'
 import CurrentTaskForm from './CurrentTaskForm'
+import UsersTable from './UsersTable'
 
 const roomsRef = db.collection('rooms')
 
 export default {
   name: 'Room',
-  components: { CurrentTaskForm, CardSet },
+  components: { UsersTable, CurrentTaskForm, CardSet },
   data () {
     return {
       modalShow: true,
@@ -113,10 +101,8 @@ export default {
       roomsRef.doc(this.roomId)
         .onSnapshot((doc) => {
           if (doc.data().currentTaskId) {
-            console.log('COMMIT DE TAREA')
             this.$store.commit('SET_CURRENT_TASK', doc.data().currentTaskId)
           }
-          console.log(doc.data())
           this.room = doc.data()
         }, function (error) {
           this.$bvToast.toast('Error', {
