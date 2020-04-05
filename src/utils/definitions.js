@@ -26,7 +26,8 @@ const createRoomModel = (room) => {
     mode: room.mode,
     createdAt: now,
     updatedAt: now,
-    currentTaskId: null
+    currentTaskId: null,
+    showResults: false
   }
 }
 

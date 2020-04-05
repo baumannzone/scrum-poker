@@ -20,7 +20,7 @@
 
       <hr>
 
-      <VotingList v-if="tasks && users" :tasks="tasks" :users="users"/>
+      <VotingList v-if="tasks && users" :tasks="tasks" :users="users" :showResults="room.showResults"/>
 
       <b-modal v-model="modalShow" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
         <b-form @submit.prevent="onSubmit">

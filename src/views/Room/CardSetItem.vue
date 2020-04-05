@@ -29,12 +29,20 @@ export default {
     onClick (value) {
       const voteData = { [this.currentUser.id]: value }
       tasks.setVote(this.roomId, this.currentTask, voteData)
-        .then(res => {
-          console.log('<<<<<<<<<<<<<<<<res>>>>>>>>>>>>>>>>')
-          console.log(res)
+        .then(() => {
+          this.$bvToast.toast('👌', {
+            title: 'Voto asignado correctamente',
+            variant: 'success',
+            solid: true,
+            autoHideDelay: 1000
+          })
         })
         .catch(err => {
-          console.warn(err)
+          this.$bvToast.toast('Error', {
+            title: `Error writing document: ${err}`,
+            variant: 'danger',
+            solid: true
+          })
         })
     }
   }

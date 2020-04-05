@@ -47,12 +47,15 @@ export default {
   methods: {
     onSubmit () {
       rooms.setCurrentTask(this.currentRoom, this.task)
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           this.task = ''
         })
         .catch((err) => {
-          console.log(err)
+          this.$bvToast.toast('Error', {
+            title: `Error with task: ${err}`,
+            variant: 'danger',
+            solid: true
+          })
         })
     }
   }

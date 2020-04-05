@@ -80,7 +80,11 @@ export default {
           this.userName = ''
         })
         .catch((err) => {
-          console.log(err)
+          this.$bvToast.toast('Error', {
+            title: `Error editando nombre: ${err}`,
+            variant: 'danger',
+            solid: true
+          })
         })
     }
   }
