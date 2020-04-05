@@ -18,6 +18,10 @@
 
       <CardSet :mode="room.mode"/>
 
+      <hr>
+
+      <VotingList v-if="tasks && users" :tasks="tasks" :users="users"/>
+
       <b-modal v-model="modalShow" hide-footer title="Scrum Poker" @hide="beforeCloseModal">
         <b-form @submit.prevent="onSubmit">
           <b-form-group
@@ -57,19 +61,21 @@ import { createUserModel, localStorageKey } from '@/utils/definitions'
 import CardSet from './CardSet'
 import CurrentTaskForm from './CurrentTaskForm'
 import UsersTable from './UsersTable'
+import VotingList from './VotingList'
 
 const roomsRef = db.collection('rooms')
 
 export default {
   name: 'Room',
-  components: { UsersTable, CurrentTaskForm, CardSet },
+  components: { VotingList, UsersTable, CurrentTaskForm, CardSet },
   data () {
     return {
       modalShow: true,
       modalUserName: '',
       userSaved: false,
       room: null,
-      users: null
+      users: null,
+      tasks: null
     }
   },
   computed: {
@@ -120,6 +126,22 @@ export default {
             users.push({ ...doc.data(), id: doc.id })
           })
           this.users = users
+        }, function (error) {
+          this.$bvToast.toast('Error', {
+            title: `Error onSnapshot: ${error}`,
+            variant: 'danger',
+            solid: true
+          })
+        })
+
+      // Tasks
+      roomsRef.doc(this.roomId).collection('tasks')
+        .onSnapshot((querySnapshot) => {
+          const tasks = {}
+          querySnapshot.forEach(doc => {
+            tasks[doc.id] = { ...doc.data() }
+          })
+          this.tasks = tasks
         }, function (error) {
           this.$bvToast.toast('Error', {
             title: `Error onSnapshot: ${error}`,
