@@ -1,36 +1,24 @@
 <template>
-  <div class="voting-list">
-    <h5>Votaciones</h5>
-    <div v-if="hasUsers && currentTaskhasVotes">
+  <div v-if="hasUsers && currentTaskhasVotes" class="voting-list">
+    <div class="d-flex justify-content-between mb-2">
+      <h5>Votaciones</h5>
+      <b-button size="sm" @click="toggleShowResults">{{ showHideText }} resultados</b-button>
+    </div>
+    <div>
 
-      <template v-if="showResults">
-        <b-list-group>
-          <b-list-group-item
-            v-for="(vote, userId) in usersWhoVoted"
-            class="d-flex justify-content-between align-items-center"
-            :key="userId"
-          >
-            {{ usersObject[userId].name }}
-            <b-badge variant="primary" pill> {{ vote }}</b-badge>
-          </b-list-group-item>
-        </b-list-group>
-      </template>
+      <b-list-group>
+        <b-list-group-item
+          v-for="(vote, userId) in usersWhoVoted"
+          class="d-flex justify-content-between align-items-center"
+          :key="userId"
+        >
+          {{ usersObject[userId].name }}
+          <b-badge v-if="showResults" variant="primary" pill> {{ vote }}</b-badge>
+        </b-list-group-item>
+      </b-list-group>
 
-      <template v-else>
-        <ul class="list-inline">
-          <transition-group name="list">
-            <li v-for="(vote, userId) in usersWhoVoted" :key="userId" class="list-inline-item">
-              <b-badge>
-                {{ usersObject[userId].name }}
-              </b-badge>
-            </li>
-          </transition-group>
-        </ul>
-      </template>
-
-      <hr>
-
-      <div class="results">
+      <div class="results" v-if="showResults">
+        <hr>
         <h5>Media:</h5>
         <div class="text-monospace">
 
@@ -45,6 +33,7 @@
 </template>
 
 <script>
+import rooms from '@/api/rooms'
 import { mapState } from 'vuex'
 
 export default {
@@ -66,7 +55,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentTask']),
+    ...mapState(['currentTask', 'currentRoom']),
     usersWhoVoted () {
       return this.tasks[this.currentTask]
     },
@@ -91,6 +80,24 @@ export default {
     },
     voteAvg () {
       return this.sumVotes / this.voteNumElements
+    },
+    showHideText () {
+      return this.showResults ? 'Ocultar' : 'Mostrar'
+    }
+  },
+  methods: {
+    toggleShowResults () {
+      rooms.setShowResults(this.currentRoom, !this.showResults)
+        .then((res) => {
+          // console.log(res)
+        })
+        .catch((err) => {
+          this.$bvToast.toast('Error', {
+            title: `Error writing document: ${err}`,
+            variant: 'danger',
+            solid: true
+          })
+        })
     }
   }
 }

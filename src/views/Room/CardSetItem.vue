@@ -31,9 +31,7 @@ export default {
       tasks.setVote(this.roomId, this.currentTask, voteData)
         .then(() => {
           this.$bvToast.toast('👌', {
-            title: 'Voto asignado correctamente',
             variant: 'success',
-            solid: true,
             autoHideDelay: 1000
           })
         })

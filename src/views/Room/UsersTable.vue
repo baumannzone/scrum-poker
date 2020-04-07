@@ -9,16 +9,15 @@
       <template v-slot:cell(canEdit)="data">
         <div v-if="data.item.canEdit">
           <!--<b-button size="sm" variant="outline-danger" @click="removeUser(data.item.id)">X</b-button>-->
-          <b-form inline>
+          <b-form inline @submit.prevent="editUserName(data.item.id)">
             <label class="sr-only" for="name">Nombre</label>
             <b-input
               v-model="userName"
               size="sm"
               id="name"
               placeholder="Nombre"
-              @keyup.enter="editUserName(data.item.id)"
             ></b-input>
-            <b-button class="ml-2" size="sm" variant="outline-primary" @click="editUserName(data.item.id)">Cambiar Nombre</b-button>
+            <b-button type="submit" class="ml-2" size="sm" variant="outline-primary">Cambiar Nombre</b-button>
           </b-form>
         </div>
       </template>
@@ -30,6 +29,7 @@
 <script>
 import { mapState } from 'vuex'
 import users from '@/api/users'
+import { localStorageKey } from '@/utils/definitions'
 
 export default {
   name: 'UsersTable',
@@ -75,6 +75,7 @@ export default {
       // console.log(id)
     },
     editUserName (userId) {
+      localStorage.setItem(localStorageKey, JSON.stringify(this.userName))
       users.editUserName(this.currentRoom, userId, this.userName)
         .then(() => {
           this.userName = ''

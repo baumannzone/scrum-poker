@@ -49,6 +49,10 @@ export default {
       rooms.setCurrentTask(this.currentRoom, this.task)
         .then(() => {
           this.task = ''
+          this.$bvToast.toast('Tarea 👌', {
+            variant: 'success',
+            autoHideDelay: 1000
+          })
         })
         .catch((err) => {
           this.$bvToast.toast('Error', {
